@@ -30,8 +30,39 @@ export const deleteUser = async (req, res, next) => {
     return next(createError(403, "you must be delete your account"));
   }
 };
-export const getUser = async (req, res, next) => {};
-export const sub = async (req, res, next) => {};
-export const unsub = async (req, res, next) => {};
+export const getUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    res.status(200).send(user);
+  } catch (error) {
+    return next(createError(404, "you can not get user"));
+  }
+};
+export const sub = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.user.id, {
+      $push: { subscribedUsers: req.params.id },
+    });
+    await User.findByIdAndUpdate(req.params.id, {
+      $inc: { subscribers: 1 },
+    });
+    res.status(200).json("Subscription success");
+  } catch (error) {
+    next(error);
+  }
+};
+export const unsub = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.user.id, {
+      $pull: { subscribedUsers: req.params.id },
+    });
+    await User.findByIdAndUpdate(req.params.id, {
+      $inc: { subscribers: -1 },
+    });
+    res.status(200).json("Unsubscription success");
+  } catch (error) {
+    next(error);
+  }
+};
 export const like = async (req, res, next) => {};
 export const dislike = async (req, res, next) => {};

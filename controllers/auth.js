@@ -10,7 +10,7 @@ export const signup = async (req, res, next) => {
     const newUser = new User({ ...req.body, password: hash });
 
     await newUser.save();
-    res.status(200).send("Tao thanh cong user");
+    res.status(200).send("create success new user");
   } catch (error) {
     next(error);
   }
